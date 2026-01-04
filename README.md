@@ -7,6 +7,10 @@
 A complete **full-stack authentication system** built using **Next.js App Router + MongoDB**.  
 This project covers the full auth lifecycle with modern UI + secure backend routes:
 
+<p align="center">
+  <img src="src/screenshots/ss.png" alt="Login Page UI" width="800"/>
+</p>
+
 ✅ Signup (bcrypt password hashing)  
 ✅ Login (JWT stored in **httpOnly cookie**)  
 ✅ Logout (clears cookie)  
