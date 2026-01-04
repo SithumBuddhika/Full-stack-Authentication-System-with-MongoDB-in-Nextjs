@@ -14,13 +14,18 @@ export default function ResetPasswordPage() {
   const [confirm, setConfirm] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const urlToken = window.location.search.split("=")[1];
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("token");
     setToken(urlToken || "");
   }, []);
+
+  const tokenPreview = useMemo(() => {
+    if (!token) return "No token found";
+    return token.length <= 18 ? token : `${token.slice(0, 10)}...${token.slice(-8)}`;
+  }, [token]);
 
   const disabled = useMemo(() => {
     if (!token) return true;
@@ -34,7 +39,6 @@ export default function ResetPasswordPage() {
     try {
       setLoading(true);
       await axios.post("/api/users/resetpassword", { token, password });
-      setDone(true);
       toast.success("Password reset successful");
       router.push("/login");
     } catch (error: any) {
@@ -45,8 +49,6 @@ export default function ResetPasswordPage() {
     }
   };
 
-  const tokenPreview = token ? `${token.slice(0, 10)}...${token.slice(-8)}` : "No token found";
-
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="relative w-full max-w-md">
@@ -55,9 +57,7 @@ export default function ResetPasswordPage() {
 
         <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-7 sm:p-8">
           <h1 className="text-2xl font-semibold text-white">Reset password</h1>
-          <p className="mt-2 text-sm text-slate-300">
-            Set a new password for your account.
-          </p>
+          <p className="mt-2 text-sm text-slate-300">Create a new password for your account.</p>
 
           <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-3">
             <p className="text-xs uppercase tracking-wider text-slate-400">Token</p>
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
               disabled={disabled}
               className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/15 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-cyan-400/70 disabled:cursor-not-allowed disabled:opacity-60 transition"
             >
-              {loading ? "Resetting..." : done ? "Done" : "Reset password"}
+              {loading ? "Resetting..." : "Reset password"}
             </button>
 
             <div className="text-center text-sm text-slate-300">
@@ -115,10 +115,11 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="mt-6 text-center text-xs text-slate-400">
-            Link expires in 1 hour • Secure reset
+            Secure reset • Link expires in 1 hour
           </div>
         </div>
       </div>
     </div>
   );
 }
+
